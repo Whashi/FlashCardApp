@@ -2,11 +2,25 @@ from tkinter import *
 import pandas
 import random
 
-# ---------------------------- IMPORT CSV  ------------------------------- #
-word_list = pandas.read_csv("./data/french_words.csv")
+# ---------------------------- DATA SETUP  ------------------------------- #
+try:
+    word_list = pandas.read_csv("./data/words_to_learn.csv")
+except FileNotFoundError:
+    word_list = pandas.read_csv("./data/french_words.csv")
+
 word_list_dict = word_list.to_dict(orient="records")
 words = random.choice(word_list_dict)
+# print(word_list_dict, word_list)
 timer = ""
+
+# ----------------------------  SAVE INCORRECT WORDS  ------------------------------- #
+def save_word():
+    global word_list_dict
+    global words
+    word_list_dict.remove(words)
+    practice_words = {"French": item["French"] for item in word_list_dict}
+    print(practice_words)
+    change_word()
 
 # ---------------------------- SHOW FRENCH WORD  ------------------------------- #
 def change_word():
@@ -36,7 +50,7 @@ window = Tk()
 window.title("Flash Card")
 window.config(padx=50, pady=50, background=BACKGROUND_COLOR)
 
-#Card Front
+#Card
 card_canvas = Canvas(width=800, height=526, background=BACKGROUND_COLOR, highlightthickness=0)
 card_front_img = PhotoImage(file="./images/card_front.png")
 card_back_img = PhotoImage(file="./images/card_back.png")
@@ -49,7 +63,7 @@ change_word()
 
 #Correct Button
 correct_img = PhotoImage(file="./images/right.png")
-correct_button = Button(image=correct_img, highlightthickness=0, command=change_word)
+correct_button = Button(image=correct_img, highlightthickness=0, command=save_word)
 correct_button.grid(column=0, row=1)
 
 #Incorrect Button
